@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+
+import argparse
+import json
+import datetime
+
+import progression
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--action', '-a', type=str, required=True, choices=["new", "edit", "remove"], help="action to perform")
+args = parser.parse_args()
+
+
+
+def new_progression_visualization():
+    """"""
+    # Create/Fetch config directory
+    config_path = progression.util.get_config_path(create_if_absent=True)
+
+    # TODO: Automatic start and end date finder? Maybe add on to pittapi with calendar
+    # term_code = input("What's the term code for the Pitt Semester (e.g. 2171)? ")
+
+    # Data initialization
+    data = {}
+
+    data['start-date'] = '01/06/2020'
+    data['end-date'] = '04/25/2020'
+
+    data['finals'] = {
+        'start-date': '04/20/2020',
+        'end-date': '04/25/2020'
+    }
+
+
+
+actions = {
+    "new": new_progression_visualization
+}
+
+actions[args.action]()
