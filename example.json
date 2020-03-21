@@ -1,5 +1,16 @@
 {
-  "start-date": "01-01-2020",
-  "end-date": "04-21-2020"
-
+  "start-date": "01/06/2020",
+  "end-date": "04/20/2020",
+  "breaks": [
+    {
+      "title": "springbreak",
+      "start-date": "03/08/2020",
+      "end-date": "03/15/2020"
+    }
+  ],
+  "exams": [],
+  "finals": {
+      "start-date": "04/20/2020",
+      "end-date": "04/25/2020"
+  }
 }
