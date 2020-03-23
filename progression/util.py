@@ -1,21 +1,12 @@
+import json
 import sched
 from pathlib import Path
 from subprocess import Popen, PIPE
+from datetime import datetime, date
 
 current_dir = Path(__file__).parent
 
 s = sched.scheduler()
-
-
-class InkyPHATProperties:
-    WIDTH = 212
-    HEIGHT = 104
-
-    WHITE = 0
-    BLACK = 1
-    RED = 2
-    YELLOW = 2
-
 
 def main_service_loop() -> None:
     """Main service loop to rerun service while raspberry pi is alive"""
@@ -39,5 +30,30 @@ def get_config_path(create_if_absent: bool = False) -> Path:
             raise RuntimeError("Missing ~/.sp_config. Please run creation script.")
     return config_path
 
-def write_configuration_file(filename, config_path=get_config_path()):
+
+def to_datetime(d: str):
+    return datetime.strptime(d, "%m/%d/%Y").date()
+
+
+def get_configuration_file(filename='default.json', config_path=None):
+    # file = config_path / filename
+    # if not file.exists():
+    #     raise ValueError(str(file) + " does not exist")
+    #
+    # f = file.open()
+    # configuration = json.load(f)
+    # f.close()
+
+    configuration = {}
+
+    configuration['start-date'] = '01/06/2020'
+    configuration['end-date'] = '04/25/2020'
+
+
+    configuration['start-date'] = to_datetime(configuration['start-date'])
+    configuration['end-date'] = to_datetime(configuration['end-date'])
+    return configuration
+
+
+def write_configuration_file(filename='default.json', config_path=None):
     pass

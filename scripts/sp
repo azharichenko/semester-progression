@@ -2,14 +2,14 @@
 
 import argparse
 import json
-import datetime
+from datetime import date
 
 import progression
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--action', '-a', type=str, required=True, choices=["new", "edit", "remove"], help="action to perform")
+parser.add_argument('--action', '-a', type=str, required=True, choices=["new", "edit", "remove"],
+                    help="action to perform")
 args = parser.parse_args()
-
 
 
 def new_progression_visualization():
@@ -25,12 +25,18 @@ def new_progression_visualization():
 
     data['start-date'] = '01/06/2020'
     data['end-date'] = '04/25/2020'
-
+    data['breaks'] = [
+        {
+            "title": "springbreak",
+            "start-date": "03/08/2020",
+            "end-date": "03/15/2020"
+        }
+    ]
+    data['exams'] = []
     data['finals'] = {
         'start-date': '04/20/2020',
         'end-date': '04/25/2020'
     }
-
 
 
 actions = {
