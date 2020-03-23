@@ -46,12 +46,12 @@ def get_configuration_file(filename='default.json', config_path=None):
 
     configuration = {}
 
-    configuration['start-date'] = '01/06/2020'
-    configuration['end-date'] = '04/25/2020'
-
-
-    configuration['start-date'] = to_datetime(configuration['start-date'])
-    configuration['end-date'] = to_datetime(configuration['end-date'])
+    configuration['start-date'] = to_datetime('01/05/2020')
+    configuration['end-date'] = to_datetime('04/25/2020')
+    configuration['finals'] = {
+        'start-date': to_datetime("04/20/2020"),
+        'end-date': to_datetime("04/25/2020")
+    }
     return configuration
 
 
