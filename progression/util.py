@@ -2,11 +2,16 @@ import json
 import sched
 from pathlib import Path
 from subprocess import Popen, PIPE
-from datetime import datetime, date
+from datetime import datetime, timedelta
 
 current_dir = Path(__file__).parent
 
 s = sched.scheduler()
+
+ONE_DAY = timedelta(days=1)
+ONE_WEEK = timedelta(weeks=1)
+REGULAR_SEMESTER = timedelta(weeks=16)
+
 
 def main_service_loop() -> None:
     """Main service loop to rerun service while raspberry pi is alive"""
@@ -45,12 +50,27 @@ def get_configuration_file(filename='default.json', config_path=None):
     # f.close()
 
     configuration = {}
-
-    configuration['start-date'] = to_datetime('01/05/2020')
-    configuration['end-date'] = to_datetime('04/25/2020')
+    semester_start =  to_datetime('01/05/2020')
+    semester_end = semester_start + REGULAR_SEMESTER - ONE_DAY
+    configuration['start-date'] = semester_start
+    configuration['end-date'] = semester_end
+    configuration['breaks'] = [
+        {
+            'start-date': semester_start + (ONE_WEEK * 9),
+            'end-date': semester_start + (ONE_WEEK * 10)
+        },
+        {
+            'start-date': semester_start + (ONE_WEEK * 10),
+            'end-date': semester_start + (ONE_WEEK * 11)
+        }
+    ]
+    configuration['midterm'] = {
+        'start-date': semester_start + (ONE_WEEK * 6),
+        'end-date': semester_start + (ONE_WEEK * 9)
+    }
     configuration['finals'] = {
-        'start-date': to_datetime("04/20/2020"),
-        'end-date': to_datetime("04/25/2020")
+        'start-date': semester_end - ONE_WEEK + ONE_DAY,
+        'end-date': semester_end - ONE_DAY
     }
     return configuration
 
