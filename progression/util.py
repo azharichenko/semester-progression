@@ -1,7 +1,6 @@
 import json
 import sched
 from pathlib import Path
-from subprocess import Popen, PIPE
 from datetime import datetime, timedelta
 
 current_dir = Path(__file__).parent
@@ -11,17 +10,6 @@ s = sched.scheduler()
 ONE_DAY = timedelta(days=1)
 ONE_WEEK = timedelta(weeks=1)
 REGULAR_SEMESTER = timedelta(weeks=16)
-
-
-def main_service_loop() -> None:
-    """Main service loop to rerun service while raspberry pi is alive"""
-    process = Popen(['python3', str(current_dir / 'draw.py'), '-o', '~/.sp_config'])
-    s.enter(60 * 60 * 24, 1, main_service_loop)
-
-
-def start_service_loop() -> None:
-    s.enter(0, 1, main_service_loop)
-    s.run()
 
 
 def get_config_path(create_if_absent: bool = False) -> Path:
@@ -50,7 +38,7 @@ def get_configuration_file(filename='default.json', config_path=None):
     # f.close()
 
     configuration = {}
-    semester_start =  to_datetime('01/05/2020')
+    semester_start = to_datetime('01/05/2020')
     semester_end = semester_start + REGULAR_SEMESTER - ONE_DAY
     configuration['start-date'] = semester_start
     configuration['end-date'] = semester_end
@@ -77,3 +65,17 @@ def get_configuration_file(filename='default.json', config_path=None):
 
 def write_configuration_file(filename='default.json', config_path=None):
     pass
+
+
+from .draw import draw_to_display
+
+
+def main_service_loop() -> None:
+    """Main service loop to rerun service while raspberry pi is alive"""
+    draw_to_display()
+    s.enter(60 * 60 * 12, 1, main_service_loop)
+
+
+def start_service_loop() -> None:
+    s.enter(0, 1, main_service_loop)
+    s.run()

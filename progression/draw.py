@@ -23,6 +23,7 @@ def draw_dithered_square(canvas: Image, dither_amount=1, x1=0, y1=0, x2=InkyPHAT
             alternate = not alternate
         alternate = not alternate
 
+
 def draw_line(canvas: Image, h=None, v=None) -> None:
     for y in range(0, InkyPHAT.HEIGHT):
         canvas.putpixel((v, y), InkyPHAT.RED)
@@ -44,7 +45,7 @@ def create_new_image():
     completed_duration = determine_time_length(config['start-date'], today, scaling_factor)
 
     midterm_start = determine_time_length(config['start-date'], config['midterm']['start-date'],
-                                         scaling_factor)
+                                          scaling_factor)
     midterm_end = determine_time_length(config['start-date'], config['midterm']['end-date'], scaling_factor)
 
     finals_start = determine_time_length(config['start-date'], config['finals']['start-date'],
@@ -64,7 +65,7 @@ def create_new_image():
         draw_square(img, x1=start, x2=end, color=InkyPHAT.RED)
 
     for i in range(time_length // 7 + 1):
-            draw_line(img, v=int(scaling_factor * i * 7))
+        draw_line(img, v=int(scaling_factor * i * 7))
 
     return img
 
