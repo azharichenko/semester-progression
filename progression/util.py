@@ -40,25 +40,25 @@ def get_configuration_file(filename='default.json', config_path=None):
     configuration = {}
     semester_start = to_datetime('01/05/2020')
     semester_end = semester_start + REGULAR_SEMESTER - ONE_DAY
-    configuration['start-date'] = semester_start
-    configuration['end-date'] = semester_end
+    configuration['start'] = semester_start
+    configuration['end'] = semester_end
     configuration['breaks'] = [
         {
-            'start-date': semester_start + (ONE_WEEK * 9),
-            'end-date': semester_start + (ONE_WEEK * 10)
+            'start': semester_start + (ONE_WEEK * 9),
+            'end': semester_start + (ONE_WEEK * 10)
         },
         {
-            'start-date': semester_start + (ONE_WEEK * 10),
-            'end-date': semester_start + (ONE_WEEK * 11)
+            'start': semester_start + (ONE_WEEK * 10),
+            'end': semester_start + (ONE_WEEK * 11)
         }
     ]
     configuration['midterm'] = {
-        'start-date': semester_start + (ONE_WEEK * 6),
-        'end-date': semester_start + (ONE_WEEK * 9)
+        'start': semester_start + (ONE_WEEK * 6),
+        'end': semester_start + (ONE_WEEK * 9)
     }
     configuration['finals'] = {
-        'start-date': semester_end - ONE_WEEK + ONE_DAY,
-        'end-date': semester_end - ONE_DAY
+        'start': semester_end - ONE_WEEK + ONE_DAY,
+        'end': semester_end - ONE_DAY
     }
     return configuration
 
