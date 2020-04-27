@@ -72,6 +72,7 @@ from .draw import draw_to_display
 
 def main_service_loop() -> None:
     """Main service loop to rerun service while raspberry pi is alive"""
+    # TODO: Add before semester countdown and after semester please update
     draw_to_display()
     s.enter(60 * 60 * 12, 1, main_service_loop)
 
