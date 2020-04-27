@@ -7,7 +7,7 @@ ACADEMIC_CALENDAR_URL = "https://25livepub.collegenet.com/calendars/pitt-academi
 
 d = feedparser.parse(ACADEMIC_CALENDAR_URL)
 
-FINALS_START = "FINAL EXAMINATION PERIOD FOR UNDERGRADS" # "FINAL EXAMS UNDERGRAD"
+FINALS_START = re.compile("FINAL EXAM(\s|S\s|INATION\s)[\w\s]+?UNDERGRAD(\s|S\s)")
 SPRING_START = "SPRING TERM CLASSES BEGIN"
 SPRING_END = "SPRING ENDS"
 
@@ -16,4 +16,4 @@ FALL_END = "FALL TERM ENDS"
 
 for entry in d.entries:
     timestamp = entry.published_parsed
-    print(entry.title.upper())
+    print(entry.title.upper(), re.match(FINALS_START, entry.title.upper()))
