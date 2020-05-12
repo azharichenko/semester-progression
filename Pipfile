@@ -9,7 +9,7 @@ wheel = "*"
 
 [packages]
 pillow = "*"
-feedparser = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
