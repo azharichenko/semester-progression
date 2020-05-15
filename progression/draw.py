@@ -3,7 +3,7 @@ from datetime import date
 from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
-from progression.util import get_configuration_file
+from progression.api import get_configuration_file
 
 
 def draw_square(

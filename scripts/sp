@@ -4,7 +4,7 @@ import argparse
 import json
 from datetime import date, datetime, timedelta
 
-import progression.util
+import progression.api
 
 ONE_DAY = timedelta(days=1)
 ONE_WEEK = timedelta(weeks=1)
@@ -18,14 +18,14 @@ parser.add_argument('--action', '-a', type=str, choices=["new", "edit", "remove"
 args = parser.parse_args()
 
 if args.run:
-    progression.util.start_service_loop()
+    progression.api.start_service_loop()
     # TODO: add a finish to the this
 
 
 def new_progression_visualization():
     """"""
     # Create/Fetch config directory
-    config_path = progression.util.get_config_path(create_if_absent=True)
+    config_path = progression.api.get_config_path(create_if_absent=True)
 
     # TODO: Automatic start and end date finder? Maybe add on to pittapi with calendar
     start_date = input("Give the start date for the semester (MM/DD/YYYY): ")
