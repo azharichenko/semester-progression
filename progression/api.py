@@ -60,6 +60,7 @@ def get_configuration_file(filename="default.json", config_path=None):
         "start": semester_end - ONE_WEEK + ONE_DAY,
         "end": semester_end - ONE_DAY,
     }
+    configuration["outdated"] = semester_end + ONE_WEEK
     return configuration
 
 
@@ -73,9 +74,8 @@ from .draw import draw_to_display, draw_display_message
 def main_service_loop() -> None:
     """Main service loop to rerun service while raspberry pi is alive"""
     # TODO: Add before semester countdown and after semester please update
-    draw_display_message("Fall semester is over!")
-
-    # s.enter(60 * 60 * 12, 1, main_service_loop)
+    draw_to_display()
+    s.enter(60 * 60 * 12, 1, main_service_loop)
 
 
 def start_service_loop() -> None:

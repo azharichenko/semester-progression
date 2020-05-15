@@ -180,7 +180,6 @@ def draw_to_display():
     img = create_new_image()
 
     # Display generated semester progress image
-
     inky_display.set_image(img)
     inky_display.show()
 
