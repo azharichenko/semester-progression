@@ -38,7 +38,7 @@ def get_configuration_file(filename="default.json", config_path=None):
     # f.close()
 
     configuration = {}
-    semester_start = to_datetime("01/05/2020")
+    semester_start = to_datetime("04/05/2020")
     semester_end = semester_start + REGULAR_SEMESTER - ONE_DAY
     configuration["start"] = semester_start
     configuration["end"] = semester_end
@@ -68,16 +68,20 @@ def write_configuration_file(filename="default.json", config_path=None):
     pass
 
 
-from .draw import draw_to_display, draw_display_message
-
-
-def main_service_loop() -> None:
-    """Main service loop to rerun service while raspberry pi is alive"""
-    # TODO: Add before semester countdown and after semester please update
-    draw_to_display()
-    s.enter(60 * 60 * 12, 1, main_service_loop)
-
-
-def start_service_loop() -> None:
-    s.enter(0, 1, main_service_loop)
-    s.run()
+# from .draw import draw_to_display, draw_display_message
+#
+#
+# def main_service_loop() -> None:
+#     """Main service loop to rerun service while raspberry pi is alive"""
+#     # TODO: Add before semester countdown and after semester please update
+#     draw_to_display()
+#
+#
+#
+#
+#     s.enter(60 * 60 * 12, 1, main_service_loop)
+#
+#
+# def start_service_loop() -> None:
+#     s.enter(0, 1, main_service_loop)
+#     s.run()

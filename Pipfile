@@ -11,6 +11,7 @@ wheel = "*"
 pillow = "*"
 requests = "*"
 black = "==19.10b0"
+font-hanken-grotesk = "*"
 
 [requires]
 python_version = "3.7"
