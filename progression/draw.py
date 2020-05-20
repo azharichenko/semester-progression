@@ -4,7 +4,7 @@ from typing import NamedTuple
 # from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
-from progression.api import get_configuration_file
+from progression.io import get_configuration_file
 
 
 class InkyPHAT:
@@ -64,7 +64,7 @@ def determine_time_length(start: date, end: date, scaling: float = None) -> int:
     return (end - start).days
 
 
-def calculate_times(config, *, key=None, struct=None, scaling_factor=1):
+def calculate_times(config, *, key=None, struct=None, scaling_factor: float = 1.0):
     if key:
         return (
             determine_time_length(
@@ -96,7 +96,7 @@ def draw_progress_bar(
     draw_square(img, x1=x1, y1=y1, x2=progress, y2=y2, color=color)
 
 
-def draw_text(img: Image, text: str, color=InkyPHAT.BLACK):
+def draw_text(img: Image, text: str, color=InkyPHAT.BLACK) -> None:
     draw = ImageDraw.Draw(img)
     hanked_medium = ImageFont.truetype(HankenGroteskMedium, 20)
 
@@ -106,7 +106,7 @@ def draw_text(img: Image, text: str, color=InkyPHAT.BLACK):
     draw.text((164, InkyPHAT.HEIGHT // 4 + 2), text, color, font=hanked_medium)
 
 
-def draw_semester_display( y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image:
+def draw_semester_display(y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image:
     today = date.today()
     config = get_configuration_file()
 
@@ -195,6 +195,11 @@ def draw_semester_display( y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image
 #     inky_display.set_image(img)
 #     inky_display.show()
 
-if __name__ == "__main__":
+def draw_to_display():
     img = draw_semester_display()
     img.save("test.bmp")
+
+
+# if __name__ == "__main__":
+#     img = draw_semester_display()
+#     img.save("test.bmp")
