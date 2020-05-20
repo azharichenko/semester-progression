@@ -9,5 +9,9 @@ setup(
     author='Alex Zharichenko',
     author_email='azharichenko@gmail.com',
     description='',
-    scripts=["scripts/sp"]
+    entry_points={
+        "console_scripts": [
+            "sp=progression.api:start_service_loop"
+        ]
+    }
 )
