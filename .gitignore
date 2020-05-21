@@ -132,4 +132,5 @@ dmypy.json
 .idea/
 
 # Project specific
+.sp_config/
 temp.bmp

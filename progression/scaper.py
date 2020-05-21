@@ -8,9 +8,9 @@ SPRING_START = "SPRING TERM CLASSES BEGIN"
 FALL_START = "FALL TERM CLASSES BEGIN"
 
 
-
 def to_datetime(d: str):
     return datetime.strptime(d, "%m/%d/%Y").date()
+
 
 def find_next_semester():
     pass

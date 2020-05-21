@@ -8,19 +8,24 @@ from progression.io import get_configuration_file
 
 
 class InkyPHAT:
-    WIDTH = 212
-    HEIGHT = 104
-    BLACK = 0
-    WHITE = 255
-    RED = 127
+    WIDTH: int = 212
+    HEIGHT: int = 104
+    BLACK: int = 0
+    WHITE: int = 255
+    RED: int = 127
+
+
+HALF_H = InkyPHAT.HEIGHT // 2
+QUARTER_H = InkyPHAT.HEIGHT // 4
+DIVIDER = 160
 
 
 def draw_square(
         canvas: Image,
-        x1=0,
-        y1=0,
-        x2=InkyPHAT.WIDTH,
-        y2=InkyPHAT.HEIGHT,
+        x1: int = 0,
+        y1: int = 0,
+        x2: int = InkyPHAT.WIDTH,
+        y2: int = InkyPHAT.HEIGHT,
         color=InkyPHAT.BLACK,
 ):
     for y in range(y1, y2):
@@ -30,14 +35,13 @@ def draw_square(
 
 def draw_dithered_square(
         canvas: Image,
-        dither_amount=1,
-        x1=0,
-        y1=0,
-        x2=InkyPHAT.WIDTH,
-        y2=InkyPHAT.HEIGHT,
+        x1: int = 0,
+        y1: int = 0,
+        x2: int = InkyPHAT.WIDTH,
+        y2: int = InkyPHAT.HEIGHT,
         color=InkyPHAT.BLACK,
 ):
-    alternate = True
+    alternate: bool = True
     for y in range(y1, y2):
         for x in range(x1, x2):
             if alternate:
@@ -48,12 +52,20 @@ def draw_dithered_square(
         alternate = not alternate
 
 
-def draw_vertical_line(canvas: Image, v=0, y1=0, y2=InkyPHAT.HEIGHT, color=InkyPHAT.RED) -> None:
+def draw_vertical_line(
+        canvas: Image,
+        v: int = 0,
+        y1: int = 0,
+        y2: int = InkyPHAT.HEIGHT,
+        color=InkyPHAT.RED,
+) -> None:
     for y in range(y1, y2):
         canvas.putpixel((v, y), color)
 
 
-def draw_horizontal_line(canvas: Image, h=0, x1=0, x2=InkyPHAT.WIDTH, color=InkyPHAT.RED) -> None:
+def draw_horizontal_line(
+        canvas: Image, h: int = 0, x1: int = 0, x2: int = InkyPHAT.WIDTH, color=InkyPHAT.RED
+) -> None:
     for x in range(x1, x2):
         canvas.putpixel((x, h), color)
 
@@ -91,22 +103,47 @@ def draw_progress_bar(
         y1: int = 0,
         x2: int = InkyPHAT.WIDTH,
         y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.BLACK) -> Image:
+        color=InkyPHAT.BLACK,
+) -> Image:
     progress = x1 + int((x2 - x1) * percent)
     draw_square(img, x1=x1, y1=y1, x2=progress, y2=y2, color=color)
 
 
-def draw_text(img: Image, text: str, color=InkyPHAT.BLACK) -> None:
+def draw_text(
+        img: Image,
+        text: str,
+        x1: int = 0,
+        y1: int = 0,
+        x2: int = InkyPHAT.WIDTH,
+        y2: int = InkyPHAT.HEIGHT,
+        color=InkyPHAT.BLACK,
+) -> None:
+    assert x1 < x2
+    assert x1 >= 0
     draw = ImageDraw.Draw(img)
-    hanked_medium = ImageFont.truetype(HankenGroteskMedium, 20)
+    font = 20
 
-    text_w, text_h = hanked_medium.getsize(text)
-    text_x = (InkyPHAT.WIDTH - text_w) // 2
-    text_y = (InkyPHAT.HEIGHT - text_h) // 2
-    draw.text((164, InkyPHAT.HEIGHT // 4 + 2), text, color, font=hanked_medium)
+    text_w = 0
+    text_h = 0
+
+    hanked_medium = ImageFont.truetype(HankenGroteskMedium, font)
+    while font > 0:
+        text_w, text_h = hanked_medium.getsize(text)
+        if (x2 - x1 - text_w) > 0 and (y2 - y1 - text_h) > 0:
+            break
+        font -= 1
+        hanked_medium = ImageFont.truetype(HankenGroteskMedium, font)
+    if font == 0:
+        raise ValueError("Text not able to be displayed")
+
+    text_x = x1 + (x2 - x1 - text_w) // 2
+    text_y = y1 + (y2 - y1 - text_h) // 2
+    draw.text((text_x, text_y), text, color, font=hanked_medium)
 
 
-def draw_semester_display(y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image:
+def draw_semester_display(
+        y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT
+) -> Image:
     today = date.today()
     config = get_configuration_file()
 
@@ -129,14 +166,18 @@ def draw_semester_display(y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image:
 
     draw_square(img, color=InkyPHAT.WHITE)
 
-    draw_progress_bar(img, percent=p, y1=InkyPHAT.HEIGHT // 2, y2=y2)
+    draw_progress_bar(img, percent=p, y1=HALF_H, y2=y2)
 
-    draw_horizontal_line(img, h=InkyPHAT.HEIGHT // 2)
-    draw_horizontal_line(img, h=InkyPHAT.HEIGHT // 4)
-    draw_vertical_line(img, v=160, y2=InkyPHAT.HEIGHT // 2)
-    draw_text(img, "Wow")
+    draw_horizontal_line(img, h=HALF_H)
+    draw_horizontal_line(img, h=QUARTER_H)
+    draw_vertical_line(img, v=DIVIDER, y2=HALF_H)
+    draw_text(img, "{}%".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H)
+    draw_text(img, "CS 1656 Exam - 5/14", x2=DIVIDER, y1=0, y2=QUARTER_H)
+    draw_text(img, "CS 1699 HW 6 - 5/19", x2=DIVIDER, y1=QUARTER_H, y2=HALF_H)
 
-    draw_dithered_square(img, x1=midterm_start, x2=midterm_end, y1=y1, color=InkyPHAT.BLACK)
+    draw_dithered_square(
+        img, x1=midterm_start, x2=midterm_end, y1=y1, color=InkyPHAT.BLACK
+    )
     draw_dithered_square(img, x1=finals_start, x2=finals_end, y1=y1, color=InkyPHAT.RED)
 
     for struct in config["breaks"]:
@@ -195,10 +236,10 @@ def draw_semester_display(y1=InkyPHAT.HEIGHT // 2, y2=InkyPHAT.HEIGHT) -> Image:
 #     inky_display.set_image(img)
 #     inky_display.show()
 
+
 def draw_to_display():
     img = draw_semester_display()
     img.save("test.bmp")
-
 
 # if __name__ == "__main__":
 #     img = draw_semester_display()

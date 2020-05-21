@@ -1,5 +1,4 @@
 import json
-import sched
 from pathlib import Path
 from datetime import datetime, timedelta, date
 from typing import Dict, Any
@@ -41,14 +40,16 @@ def values_to_date(content: Dict) -> None:
             content[k] = to_date(content[k])
         elif isinstance(content[k], list):
             for e in content[k]:
-                e['start'] = to_date(e['start'])
-                e['end'] = to_date(e['end'])
+                e["start"] = to_date(e["start"])
+                e["end"] = to_date(e["end"])
         elif isinstance(content[k], dict):
-            content[k]['start'] = to_date(content[k]['start'])
-            content[k]['end'] = to_date(content[k]['end'])
+            content[k]["start"] = to_date(content[k]["start"])
+            content[k]["end"] = to_date(content[k]["end"])
 
 
-def get_configuration_file(filename="default.json", config_path=get_config_path()) -> Dict:
+def get_configuration_file(
+    filename="default.json", config_path=get_config_path()
+) -> Dict:
     global _config
     if _config is not None:
         return _config
@@ -63,11 +64,14 @@ def get_configuration_file(filename="default.json", config_path=get_config_path(
     values_to_date(content=configuration)
     _config = configuration
     from pprint import pprint
+
     pprint(configuration)
     return configuration
 
 
-def write_configuration_file(content, filename="default.json", config_path=None) -> None:
+def write_configuration_file(
+    content, filename="default.json", config_path=None
+) -> None:
     global _config
     file = config_path / filename
     with file.open("w") as f:
