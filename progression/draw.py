@@ -171,7 +171,9 @@ def draw_semester_display(
     draw_horizontal_line(img, h=HALF_H)
     draw_horizontal_line(img, h=QUARTER_H)
     draw_vertical_line(img, v=DIVIDER, y2=HALF_H)
-    draw_text(img, "{}%".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H)
+
+    draw_text(img, "140", x1=DIVIDER, y1=-4, y2=QUARTER_H)
+    draw_text(img, " {}% ".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H)
     draw_text(img, "CS 1656 Exam - 5/14", x2=DIVIDER, y1=0, y2=QUARTER_H)
     draw_text(img, "CS 1699 HW 6 - 5/19", x2=DIVIDER, y1=QUARTER_H, y2=HALF_H)
 
