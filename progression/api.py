@@ -1,3 +1,4 @@
+import asyncio
 import sched
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -46,3 +47,4 @@ def start_loop() -> None:
 
 if __name__ == "__main__":
     start_loop()
+    # asyncio.run()

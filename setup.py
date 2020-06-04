@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='semester-progression',
     version='1.0',
-    packages=['progression'],
+    packages=['progression', 'messenger'],
     url='https://github.com/azharichenko/semester-progression',
     license='MIT License',
     author='Alex Zharichenko',
