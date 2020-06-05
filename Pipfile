@@ -12,6 +12,7 @@ pillow = "*"
 requests = "*"
 black = "==19.10b0"
 font-hanken-grotesk = "*"
+python-telegram-bot = "*"
 
 [requires]
 python_version = "3.7"

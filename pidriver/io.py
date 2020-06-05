@@ -18,7 +18,7 @@ class DateEncoder(json.JSONEncoder):
 
 
 def get_config_path(create_if_absent: bool = False) -> Path:
-    """Get semester progression config path"""
+    """Get semester pidriver config path"""
     # config_path = Path("~") / ".sp_config"
     config_path = Path(".") / ".sp_config"
     if not config_path.exists():

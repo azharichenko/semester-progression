@@ -1,9 +1,9 @@
 from distutils.core import setup
 
 setup(
-    name='semester-progression',
+    name='semester-pidriver',
     version='1.0',
-    packages=['progression', 'messenger'],
+    packages=['pidriver', 'messenger'],
     url='https://github.com/azharichenko/semester-progression',
     license='MIT License',
     author='Alex Zharichenko',
@@ -11,7 +11,7 @@ setup(
     description='',
     entry_points={
         "console_scripts": [
-            "sp=progression.api:start_service_loop"
+            "sp=pidriver.api:start_service_loop"
         ]
     }
 )

@@ -4,7 +4,7 @@ from typing import NamedTuple
 # from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
-from progression.io import get_configuration_file
+from pidriver.io import get_configuration_file
 
 
 class InkyPHAT:

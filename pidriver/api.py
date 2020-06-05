@@ -3,8 +3,8 @@ import sched
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from progression.io import get_configuration_file
-from progression.draw import draw_to_display  # , draw_display_message
+from pidriver.io import get_configuration_file
+from pidriver.draw import draw_to_display  # , draw_display_message
 
 current_dir = Path(__file__).parent
 
