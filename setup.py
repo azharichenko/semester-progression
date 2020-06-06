@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='semester-pidriver',
+    name='semester-progression',
     version='1.0',
     packages=['pidriver', 'messenger'],
     url='https://github.com/azharichenko/semester-progression',

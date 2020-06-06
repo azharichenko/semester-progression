@@ -71,3 +71,21 @@ def get_course_calendar() -> List[Event]:
 def get_graduation_calendar() -> List[Event]:
     """"""
     return _fetch_calendar_events(GRADUATION_CALENDAR_URL)
+
+# ===================================================================
+
+from ics import Calendar
+from datetime import datetime
+
+ICalEvent = namedtuple("ICalEvent", ['name', 'dt'])
+
+def fetch_ical_events(url: str) -> List[ICalEvent]:
+    resp = requests.get(url)
+    c = Calendar(resp.text)
+    events = list(c.events)
+    converted_events = []
+    for event in events:
+        dt = datetime.fromisoformat(str(event.begin))
+        ical_event = ICalEvent(name=event.name, dt=dt)
+        converted_events.append(ical_event)
+    return converted_events
