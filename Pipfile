@@ -12,8 +12,6 @@ pillow = "*"
 requests = "*"
 black = "==19.10b0"
 font-hanken-grotesk = "*"
-pyrogram = "*"
-tgcrypto = "*"
 ics = "*"
 
 [requires]
