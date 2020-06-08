@@ -1,83 +1,10 @@
-"""
-The Pitt API, to access workable data of the University of Pittsburgh
-Copyright (C) 2015 Ritwik Gupta
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-"""
-
-from typing import List
-from collections import namedtuple
-
 import requests
-
-Event = namedtuple("Event", ["date", "title", "content", "meta"])
-
-ACADEMIC_CALENDAR_URL: str = "https://25livepub.collegenet.com/calendars/pitt-academic-calendar.json"
-GRADES_CALENDAR_URL: str = "https://25livepub.collegenet.com/calendars/pitt-grades-calendar.json"
-ENROLLMENT_CALENDAR_URL: str = "https://25livepub.collegenet.com/calendars/pitt-enrollment-calendar.json"
-COURSE_CALENDAR_URL: str = "https://25livepub.collegenet.com/calendars/pitt-courseclass-calendar.json"
-GRADUATION_CALENDAR_URL: str = "https://25livepub.collegenet.com/calendars/pitt-graduation-calendar.json"
-
-
-def _fetch_calendar_events(url: str) -> List[Event]:
-    """"""
-    data = requests.get(url).json()
-    events = []
-    for calendar_event in data:
-        assert calendar_event["customFields"][0]["label"] == "Event Title"
-        event = Event(
-            title=calendar_event["title"],
-            date=calendar_event["startDateTime"][:10],
-            content=calendar_event["customFields"][0]["value"],
-            meta=calendar_event["categoryCalendar"].split("|"),
-        )
-        events.append(event)
-    return events
-
-
-def get_academic_calendar() -> List[Event]:
-    """"""
-    return _fetch_calendar_events(ACADEMIC_CALENDAR_URL)
-
-
-def get_grades_calendar() -> List[Event]:
-    """"""
-    return _fetch_calendar_events(GRADES_CALENDAR_URL)
-
-
-def get_enrollment_calendar() -> List[Event]:
-    """"""
-    return _fetch_calendar_events(ENROLLMENT_CALENDAR_URL)
-
-
-def get_course_calendar() -> List[Event]:
-    """This is not a calendar about course schedule but rather
-    when courses/class are being determined for the next semester"""
-    return _fetch_calendar_events(COURSE_CALENDAR_URL)
-
-
-def get_graduation_calendar() -> List[Event]:
-    """"""
-    return _fetch_calendar_events(GRADUATION_CALENDAR_URL)
-
-# ===================================================================
-
+from collections import namedtuple
+from typing import List
 from ics import Calendar
 from datetime import datetime
 
-ICalEvent = namedtuple("ICalEvent", ['name', 'dt'])
+ICalEvent = namedtuple("ICalEvent", ['name', 'dt', 'board'])
 
 def fetch_ical_events(url: str) -> List[ICalEvent]:
     resp = requests.get(url)
@@ -89,3 +16,9 @@ def fetch_ical_events(url: str) -> List[ICalEvent]:
         ical_event = ICalEvent(name=event.name, dt=dt)
         converted_events.append(ical_event)
     return converted_events
+
+if __name__ == '__main__':
+    url = "https://trello.com/calendar/558b268ba17523360d3d4021/5d6e84ae714b94230ad7a9ef/94ca85a3db4308c4c0cb8b6340aa557d.ics"
+    from pprint import pprint
+
+    pprint(fetch_ical_events(url))

@@ -131,6 +131,9 @@ dmypy.json
 # Intellij
 .idea/
 
+# Project Specific
+test.bmp
+
 # Project specific
 .sp_config/
 temp.bmp

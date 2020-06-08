@@ -1,4 +1,3 @@
-import asyncio
 import sched
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -31,7 +30,7 @@ def update_loop() -> None:
     pass
 
 
-def start_loop() -> None:
+def start() -> None:
     config = get_configuration_file()
     today = datetime.today().date()
     if (today - config["start"]) < timedelta():
@@ -46,5 +45,4 @@ def start_loop() -> None:
 
 
 if __name__ == "__main__":
-    start_loop()
-    # asyncio.run()
+    start()

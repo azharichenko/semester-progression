@@ -21,7 +21,7 @@ def get_config_path(create_if_absent: bool = False) -> Path:
     """Get semester pidriver config path"""
     # config_path = Path("~") / ".sp_config"
     config_path = Path(".") / ".sp_config"
-    if not config_path.exists():
+    if not config_path.is_dir():
         if create_if_absent:
             config_path.mkdir()
         else:
