@@ -1,10 +1,9 @@
 from datetime import date
-from typing import NamedTuple
 
 # from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
-from pidriver.io import get_configuration_file
+from pidriver.data import get_semester_file
 
 
 class InkyPHAT:
@@ -21,12 +20,12 @@ DIVIDER = 160
 
 
 def draw_square(
-        canvas: Image,
-        x1: int = 0,
-        y1: int = 0,
-        x2: int = InkyPHAT.WIDTH,
-        y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.BLACK,
+    canvas: Image,
+    x1: int = 0,
+    y1: int = 0,
+    x2: int = InkyPHAT.WIDTH,
+    y2: int = InkyPHAT.HEIGHT,
+    color=InkyPHAT.BLACK,
 ):
     for y in range(y1, y2):
         for x in range(x1, x2):
@@ -34,12 +33,12 @@ def draw_square(
 
 
 def draw_dithered_square(
-        canvas: Image,
-        x1: int = 0,
-        y1: int = 0,
-        x2: int = InkyPHAT.WIDTH,
-        y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.BLACK,
+    canvas: Image,
+    x1: int = 0,
+    y1: int = 0,
+    x2: int = InkyPHAT.WIDTH,
+    y2: int = InkyPHAT.HEIGHT,
+    color=InkyPHAT.BLACK,
 ):
     alternate: bool = True
     for y in range(y1, y2):
@@ -53,18 +52,18 @@ def draw_dithered_square(
 
 
 def draw_vertical_line(
-        canvas: Image,
-        v: int = 0,
-        y1: int = 0,
-        y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.RED,
+    canvas: Image,
+    v: int = 0,
+    y1: int = 0,
+    y2: int = InkyPHAT.HEIGHT,
+    color=InkyPHAT.RED,
 ) -> None:
     for y in range(y1, y2):
         canvas.putpixel((v, y), color)
 
 
 def draw_horizontal_line(
-        canvas: Image, h: int = 0, x1: int = 0, x2: int = InkyPHAT.WIDTH, color=InkyPHAT.RED
+    canvas: Image, h: int = 0, x1: int = 0, x2: int = InkyPHAT.WIDTH, color=InkyPHAT.RED
 ) -> None:
     for x in range(x1, x2):
         canvas.putpixel((x, h), color)
@@ -74,6 +73,10 @@ def determine_time_length(start: date, end: date, scaling: float = None) -> int:
     if scaling is not None:
         return int((end - start).days * scaling)
     return (end - start).days
+
+
+def calculate_period_delta():
+    pass
 
 
 def calculate_times(config, *, key=None, struct=None, scaling_factor: float = 1.0):
@@ -97,26 +100,26 @@ def create_new_image() -> Image:
 
 
 def draw_progress_bar(
-        img: Image,
-        percent: float = 0.25,
-        x1: int = 0,
-        y1: int = 0,
-        x2: int = InkyPHAT.WIDTH,
-        y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.BLACK,
+    img: Image,
+    percent: float = 0.25,
+    x1: int = 0,
+    y1: int = 0,
+    x2: int = InkyPHAT.WIDTH,
+    y2: int = InkyPHAT.HEIGHT,
+    color=InkyPHAT.BLACK,
 ) -> Image:
     progress = x1 + int((x2 - x1) * percent)
     draw_square(img, x1=x1, y1=y1, x2=progress, y2=y2, color=color)
 
 
 def draw_text(
-        img: Image,
-        text: str,
-        x1: int = 0,
-        y1: int = 0,
-        x2: int = InkyPHAT.WIDTH,
-        y2: int = InkyPHAT.HEIGHT,
-        color=InkyPHAT.BLACK,
+    img: Image,
+    text: str,
+    x1: int = 0,
+    y1: int = 0,
+    x2: int = InkyPHAT.WIDTH,
+    y2: int = InkyPHAT.HEIGHT,
+    color=InkyPHAT.BLACK,
 ) -> None:
     assert x1 < x2
     assert x1 >= 0
@@ -141,11 +144,9 @@ def draw_text(
     draw.text((text_x, text_y), text, color, font=hanked_medium)
 
 
-def draw_semester_display(
-        y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT
-) -> Image:
+def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     today = date.today()
-    config = get_configuration_file()
+    config = get_semester_file()
 
     time_length = determine_time_length(config["start"], config["end"])
     scaling_factor = InkyPHAT.WIDTH / time_length
@@ -173,7 +174,9 @@ def draw_semester_display(
     draw_vertical_line(img, v=DIVIDER, y2=HALF_H)
 
     draw_text(img, "140", x1=DIVIDER, y1=-4, y2=QUARTER_H)
-    draw_text(img, " {}% ".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H)
+    draw_text(
+        img, " {}% ".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H
+    )
     draw_text(img, "CS 1656 Exam - 5/14", x2=DIVIDER, y1=0, y2=QUARTER_H)
     draw_text(img, "CS 1699 HW 6 - 5/19", x2=DIVIDER, y1=QUARTER_H, y2=HALF_H)
 
@@ -242,6 +245,7 @@ def draw_semester_display(
 def draw_to_display():
     img = draw_semester_display()
     img.save("test.bmp")
+
 
 # if __name__ == "__main__":
 #     img = draw_semester_display()

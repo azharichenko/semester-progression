@@ -2,7 +2,7 @@ import sched
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from pidriver.io import get_configuration_file
+from pidriver.data import get_semester_file
 from pidriver.draw import draw_to_display  # , draw_display_message
 
 current_dir = Path(__file__).parent
@@ -31,14 +31,14 @@ def update_loop() -> None:
 
 
 def start() -> None:
-    config = get_configuration_file()
+    semester = get_semester_file()
     today = datetime.today().date()
-    if (today - config["start"]) < timedelta():
+    if (today - semester.period.start) < timedelta():
         s.enter(0, 1, action=countdown_loop)
-    elif (today - config["end"]) < timedelta():
+    elif (today - semester.period.end) < timedelta():
         s.enter(0, 1, action=main_loop)
-    elif (today - config["outdated"]) < timedelta():
-        s.enter(0, 1, action=final_loop)
+    # elif (today - config["outdated"]) < timedelta():
+    #     s.enter(0, 1, action=final_loop)
     else:
         s.enter(0, 1, action=update_loop)
     s.run()
