@@ -74,15 +74,25 @@ class CustomEncoder(json.JSONEncoder):
 class SemesterDecoder(json.JSONDecoder):
     def decode(self, s: str, _w: Callable[..., Any] = ...) -> Any:
         decode_json = super(SemesterDecoder, self).decode(s)
+        # TODO: Add semster valididation step to check if start < end and start and end are within period
         return Semester(
             type=decode_json["type"],
             events=[
                 Event(name=event["name"], date=date.fromisoformat(event["date"]))
                 for event in decode_json["events"]
             ],
-            period=Period(**decode_json["period"]),
-            midterms=Period(**decode_json["midterms"]),
-            finals=Period(**decode_json["finals"]),
+            period=Period(
+                start=date.fromisoformat(decode_json["period"]["start"]),
+                end=date.fromisoformat(decode_json["period"]["end"]),
+            ),
+            midterms=Period(
+                start=date.fromisoformat(decode_json["midterms"]["start"]),
+                end=date.fromisoformat(decode_json["midterms"]["end"]),
+            ),
+            finals=Period(
+                start=date.fromisoformat(decode_json["finals"]["start"]),
+                end=date.fromisoformat(decode_json["finals"]["end"]),
+            ),
         )
 
 

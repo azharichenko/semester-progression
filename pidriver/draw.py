@@ -1,9 +1,10 @@
 from datetime import date
+from typing import Tuple
 
 # from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
-from pidriver.data import get_semester_file
+from pidriver.data import get_semester_file, Period
 
 
 class InkyPHAT:
@@ -75,15 +76,20 @@ def determine_time_length(start: date, end: date, scaling: float = None) -> int:
     return (end - start).days
 
 
-def calculate_period_delta():
-    pass
+def calculate_period_delta(
+    semester_period: Period, period: Period, scaling_factor: float = 1.0
+) -> Tuple:
+    return (
+        determine_time_length(semester_period.start, period.start, scaling_factor),
+        determine_time_length(semester_period.start, period.end, scaling_factor),
+    )
 
 
 def calculate_times(config, *, key=None, struct=None, scaling_factor: float = 1.0):
     if key:
         return (
             determine_time_length(
-                config["start"], config[key]["start"], scaling_factor
+                config.period.start, config[key].start, scaling_factor
             ),
             determine_time_length(config["start"], config[key]["end"], scaling_factor),
         )
@@ -148,16 +154,22 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     today = date.today()
     config = get_semester_file()
 
-    time_length = determine_time_length(config["start"], config["end"])
+    time_length = determine_time_length(config.period.start, config.period.end)
     scaling_factor = InkyPHAT.WIDTH / time_length
 
-    completed_duration = determine_time_length(config["start"], today, scaling_factor)
-
-    midterm_start, midterm_end = calculate_times(
-        config, key="midterm", scaling_factor=scaling_factor
+    completed_duration = determine_time_length(
+        config.period.start, today, scaling_factor
     )
-    finals_start, finals_end = calculate_times(
-        config, key="finals", scaling_factor=scaling_factor
+
+    midterm_start, midterm_end = calculate_period_delta(
+        semester_period=config.period,
+        period=config.midterms,
+        scaling_factor=scaling_factor,
+    )
+    finals_start, finals_end = calculate_period_delta(
+        semester_period=config.period,
+        period=config.finals,
+        scaling_factor=scaling_factor,
     )
 
     img = create_new_image()
@@ -185,13 +197,14 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     )
     draw_dithered_square(img, x1=finals_start, x2=finals_end, y1=y1, color=InkyPHAT.RED)
 
-    for struct in config["breaks"]:
-        start, end = calculate_times(
-            config, struct=struct, scaling_factor=scaling_factor
-        )
-        start = determine_time_length(config["start"], struct["start"], scaling_factor)
-        end = determine_time_length(config["start"], struct["end"], scaling_factor)
-        draw_square(img, x1=start, x2=end, y1=y1, color=InkyPHAT.RED)
+    # TODO: Reimplement breaks
+    # for struct in config["breaks"]:
+    #     start, end = calculate_times(
+    #         config, struct=struct, scaling_factor=scaling_factor
+    #     )
+    #     start = determine_time_length(config["start"], struct["start"], scaling_factor)
+    #     end = determine_time_length(config["start"], struct["end"], scaling_factor)
+    #     draw_square(img, x1=start, x2=end, y1=y1, color=InkyPHAT.RED)
 
     for i in range(time_length // 7 + 1):
         draw_vertical_line(img, v=int(scaling_factor * i * 7), y1=y1)
