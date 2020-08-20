@@ -1,13 +1,12 @@
 import json
 from pathlib import Path
-from datetime import datetime, date
+from typing import List, NamedTuple
+from datetime import datetime, timedelta, date
 from typing import Dict, Any, NamedTuple, Optional, Callable, Tuple, Iterator
 
 import requests
-from typing import List, NamedTuple
-from ics import Calendar
-from datetime import datetime, timedelta, date
 from parse import compile
+from ics import Calendar
 
 ONE_DAY = timedelta(days=1)
 ONE_WEEK = timedelta(weeks=1)
@@ -73,7 +72,18 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomDecoder(json.JSONDecoder):
-    pass
+    def decode(self, s: str, _w: Callable[..., Any] = ...) -> Any:
+        decode_json = super(CustomDecoder, self).decode(s)
+        return Semester(
+            type=decode_json["type"],
+            events=[
+                Event(name=event["name"], date=date.fromisoformat(event["date"]))
+                for event in decode_json["events"]
+            ],
+            period=Period(**decode_json["period"]),
+            midterms=Period(**decode_json["midterms"]),
+            finals=Period(**decode_json["finals"]),
+        )
 
 
 def fetch_ical_events(url: str) -> List[TrelloICalEvent]:
@@ -150,6 +160,7 @@ def get_semester_file(
     else:
         with file.open() as f:
             configuration = json.load(f, cls=CustomDecoder)
+
     _semester = configuration
     return configuration
 
@@ -180,10 +191,10 @@ def write_semester_file(
 
 
 def write_config_file(content, filename="config.json", config_path=None) -> None:
-    pass
+    global _config
 
 
 if __name__ == "__main__":
     from pprint import pprint
 
-    pprint(dict(get_semester_file()._asdict()))
+    pprint(get_semester_file())
