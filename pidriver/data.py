@@ -71,9 +71,9 @@ class CustomEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class CustomDecoder(json.JSONDecoder):
+class SemesterDecoder(json.JSONDecoder):
     def decode(self, s: str, _w: Callable[..., Any] = ...) -> Any:
-        decode_json = super(CustomDecoder, self).decode(s)
+        decode_json = super(SemesterDecoder, self).decode(s)
         return Semester(
             type=decode_json["type"],
             events=[
@@ -159,7 +159,7 @@ def get_semester_file(
         configuration = compile_semester_data()
     else:
         with file.open() as f:
-            configuration = json.load(f, cls=CustomDecoder)
+            configuration = json.load(f, cls=SemesterDecoder)
 
     _semester = configuration
     return configuration
