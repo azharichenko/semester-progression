@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Tuple
+from typing import Tuple, Generator
 
 # from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
@@ -150,15 +150,24 @@ def draw_text(
     draw.text((text_x, text_y), text, color, font=hanked_medium)
 
 
+def sunday_tick_marks(period: Period, scaling_factor: float) -> Generator[int, None, None]:
+    sunday_distance = 6 - period.start.isoweekday()
+    total_length = (period.end - period.start).days
+    days = sunday_distance
+
+    while days < total_length:
+        yield int(days * scaling_factor)
+        days += 7
+
+
 def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     today = date.today()
     config = get_semester_file()
 
     time_length = determine_time_length(config.period.start, config.period.end)
     scaling_factor = InkyPHAT.WIDTH / time_length
-
     completed_duration = determine_time_length(
-        config.period.start, today, scaling_factor
+        start=config.period.start, end=today, scaling=scaling_factor
     )
 
     midterm_start, midterm_end = calculate_period_delta(
@@ -185,7 +194,7 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     draw_horizontal_line(img, h=QUARTER_H)
     draw_vertical_line(img, v=DIVIDER, y2=HALF_H)
 
-    draw_text(img, "140", x1=DIVIDER, y1=-4, y2=QUARTER_H)
+    draw_text(img, str(time_length - (date.today() - config.period.start).days), x1=DIVIDER, y1=-4, y2=QUARTER_H)
     draw_text(
         img, " {}% ".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H
     )
@@ -206,8 +215,8 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     #     end = determine_time_length(config["start"], struct["end"], scaling_factor)
     #     draw_square(img, x1=start, x2=end, y1=y1, color=InkyPHAT.RED)
 
-    for i in range(time_length // 7 + 1):
-        draw_vertical_line(img, v=int(scaling_factor * i * 7), y1=y1)
+    for sunday in sunday_tick_marks(config.period, scaling_factor=scaling_factor):
+        draw_vertical_line(img, v=sunday, y1=y1)
 
     return img
 

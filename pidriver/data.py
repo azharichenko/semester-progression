@@ -138,7 +138,7 @@ def compile_semester_data() -> Semester:
         period=Period(start=period_start, end=period_end),
         events=events,
         midterms=Period(
-            start=period_start + (ONE_WEEK * 6), end=period_end + (ONE_WEEK * 9)
+            start=period_start + (ONE_WEEK * 6), end=period_start + (ONE_WEEK * 9)
         ),
         finals=Period(start=finals_start, end=finals_start + ONE_WEEK - ONE_DAY),
     )
@@ -206,5 +206,5 @@ def write_config_file(content, filename="config.json", config_path=None) -> None
 
 if __name__ == "__main__":
     from pprint import pprint
-
+    pprint(compile_semester_data())
     pprint(get_semester_file())
