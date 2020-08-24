@@ -1,8 +1,7 @@
 import json
 from pathlib import Path
-from typing import List, NamedTuple
 from datetime import datetime, timedelta, date
-from typing import Dict, Any, NamedTuple, Optional, Callable, Tuple, Iterator
+from typing import List, Dict, Any, NamedTuple, Optional, Callable, Tuple, Iterator
 
 import requests
 from parse import compile
@@ -132,7 +131,7 @@ def compile_semester_data() -> Semester:
                 finals_start = event.dt
         else:
             events.append(Event(name=event.name, date=event.dt))
-
+    events = sorted(events, key=lambda x: x.date)
     return Semester(
         type=semester_type,
         period=Period(start=period_start, end=period_end),
@@ -158,14 +157,14 @@ def get_config_path(create_if_absent: bool = False) -> Path:
 
 
 def get_semester_file(
-    filename="semester.json", config_path=get_config_path()
+    filename="semester.json", config_path=get_config_path(), fetch_ical=False
 ) -> Semester:
     global _semester
     if _semester is not None:
         return _semester
 
     file = config_path / filename
-    if not file.is_file():
+    if not file.is_file() or fetch_ical:
         configuration = compile_semester_data()
     else:
         with file.open() as f:
@@ -206,5 +205,6 @@ def write_config_file(content, filename="config.json", config_path=None) -> None
 
 if __name__ == "__main__":
     from pprint import pprint
+
     pprint(compile_semester_data())
-    pprint(get_semester_file())
+    # pprint(get_semester_file())

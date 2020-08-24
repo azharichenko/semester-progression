@@ -1,18 +1,18 @@
 from datetime import date
 from typing import Tuple, Generator
 
-# from inky import InkyPHAT
+from inky import InkyPHAT
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
 from pidriver.data import get_semester_file, Period
 
-
-class InkyPHAT:
-    WIDTH: int = 212
-    HEIGHT: int = 104
-    BLACK: int = 0
-    WHITE: int = 255
-    RED: int = 127
+#
+# class InkyPHAT:
+#     WIDTH: int = 212
+#     HEIGHT: int = 104
+#     BLACK: int = 0
+#     WHITE: int = 255
+#     RED: int = 127
 
 
 HALF_H = InkyPHAT.HEIGHT // 2
@@ -102,7 +102,7 @@ def calculate_times(config, *, key=None, struct=None, scaling_factor: float = 1.
 
 
 def create_new_image() -> Image:
-    return Image.new("L", size=(InkyPHAT.WIDTH, InkyPHAT.HEIGHT))
+    return Image.new("P", size=(InkyPHAT.WIDTH, InkyPHAT.HEIGHT))
 
 
 def draw_progress_bar(
@@ -150,7 +150,9 @@ def draw_text(
     draw.text((text_x, text_y), text, color, font=hanked_medium)
 
 
-def sunday_tick_marks(period: Period, scaling_factor: float) -> Generator[int, None, None]:
+def sunday_tick_marks(
+    period: Period, scaling_factor: float
+) -> Generator[int, None, None]:
     sunday_distance = 6 - period.start.isoweekday()
     total_length = (period.end - period.start).days
     days = sunday_distance
@@ -194,12 +196,39 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     draw_horizontal_line(img, h=QUARTER_H)
     draw_vertical_line(img, v=DIVIDER, y2=HALF_H)
 
-    draw_text(img, str(time_length - (date.today() - config.period.start).days), x1=DIVIDER, y1=-4, y2=QUARTER_H)
+    draw_text(
+        img,
+        str(time_length - (date.today() - config.period.start).days),
+        x1=DIVIDER,
+        y1=-4,
+        y2=QUARTER_H,
+    )
     draw_text(
         img, " {}% ".format(int(p * 100)), x1=DIVIDER, y1=QUARTER_H - 4, y2=HALF_H
     )
-    draw_text(img, "CS 1656 Exam - 5/14", x2=DIVIDER, y1=0, y2=QUARTER_H)
-    draw_text(img, "CS 1699 HW 6 - 5/19", x2=DIVIDER, y1=QUARTER_H, y2=HALF_H)
+
+    top_text: str
+    bottom_text: str
+    if len(config.events) >= 2:
+        first_event, second_event = config.events[0], config.events[1]
+        top_text = "{} - {}/{}".format(
+            first_event.name, first_event.date.month, first_event.date.day
+        )
+        bottom_text = "{} - {}/{}".format(
+            second_event.name, second_event.date.month, second_event.date.day
+        )
+    elif len(config.events) >= 1:
+        first_event = config.events[0]
+        top_text = "{} - {}/{}".format(
+            first_event.name, first_event.date.month, first_event.date.day
+        )
+        bottom_text = ""
+    else:
+        top_text = "No events"
+        bottom_text = ""
+
+    draw_text(img, top_text, x2=DIVIDER, y1=0, y2=QUARTER_H)
+    draw_text(img, bottom_text, x2=DIVIDER, y1=QUARTER_H, y2=HALF_H)
 
     draw_dithered_square(
         img, x1=midterm_start, x2=midterm_end, y1=y1, color=InkyPHAT.BLACK
@@ -213,7 +242,7 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     #     )
     #     start = determine_time_length(config["start"], struct["start"], scaling_factor)
     #     end = determine_time_length(config["start"], struct["end"], scaling_factor)
-    #     draw_square(img, x1=start, x2=end, y1=y1, color=InkyPHAT.RED)
+    #     draw_square(img, x1=start, x2=end, y10=y1, color=InkyPHAT.RED)
 
     for sunday in sunday_tick_marks(config.period, scaling_factor=scaling_factor):
         draw_vertical_line(img, v=sunday, y1=y1)
@@ -222,51 +251,51 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
 
 
 #
-# def _draw_to_display(img: Image) -> None:
-#     # Set up properties of eInk display
-#     inky_display = InkyPHAT("red")
-#     inky_display.set_border(inky_display.BLACK)
-#
-#     # Display generated semester progress image
-#     inky_display.set_image(img)
-#     inky_display.show()
+def _draw_to_display(img: Image) -> None:
+    # Set up properties of eInk display
+    inky_display = InkyPHAT("red")
+    inky_display.set_border(inky_display.BLACK)
+
+    # Display generated semester progress image
+    inky_display.set_image(img)
+    inky_display.show()
 
 
-# def draw_display_message(text: str):
-#     # Set up properties of eInk display
-#     inky_display = InkyPHAT("red")
-#     inky_display.set_border(inky_display.BLACK)
-#
-#     hanked_medium = ImageFont.truetype(HankenGroteskMedium, 20)
-#
-#     img = Image.new("P", size=(InkyPHAT.WIDTH, InkyPHAT.HEIGHT))
-#     draw = ImageDraw.Draw(img)
-#
-#     text_w, text_h = hanked_medium.getsize(text)
-#     text_x = (InkyPHAT.WIDTH - text_w) // 2
-#     text_y = (InkyPHAT.HEIGHT - text_h) // 2
-#     draw.text((text_x, text_y), text, InkyPHAT.BLACK, font=hanked_medium)
-#
-#     inky_display.set_image(img)
-#     inky_display.show()
-#
+def draw_display_message(text: str):
+    # Set up properties of eInk display
+    inky_display = InkyPHAT("red")
+    inky_display.set_border(inky_display.BLACK)
 
-# def draw_to_display():
-#     # Set up properties of eInk display
-#     inky_display = InkyPHAT("red")
-#     inky_display.set_border(inky_display.BLACK)
-#
-#     # Load previously generated image
-#     img = create_new_image()
-#
-#     # Display generated semester progress image
-#     inky_display.set_image(img)
-#     inky_display.show()
+    hanked_medium = ImageFont.truetype(HankenGroteskMedium, 20)
+
+    img = Image.new("P", size=(InkyPHAT.WIDTH, InkyPHAT.HEIGHT))
+    draw = ImageDraw.Draw(img)
+
+    text_w, text_h = hanked_medium.getsize(text)
+    text_x = (InkyPHAT.WIDTH - text_w) // 2
+    text_y = (InkyPHAT.HEIGHT - text_h) // 2
+    draw.text((text_x, text_y), text, InkyPHAT.BLACK, font=hanked_medium)
+
+    inky_display.set_image(img)
+    inky_display.show()
 
 
 def draw_to_display():
+    # Set up properties of eInk display
+    inky_display = InkyPHAT("red")
+    inky_display.set_border(inky_display.BLACK)
+
+    # Load previously generated image
     img = draw_semester_display()
-    img.save("test.bmp")
+
+    # Display generated semester progress image
+    inky_display.set_image(img)
+    inky_display.show()
+
+
+# def draw_to_display():
+#     img = draw_semester_display()
+#     img.save("test.bmp")
 
 
 # if __name__ == "__main__":
