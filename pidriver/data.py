@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from datetime import datetime, timedelta, date
-from typing import List, Dict, Any, NamedTuple, Optional, Callable, Tuple, Iterator
+from typing import List, NamedTuple, Optional
 
 import requests
 from parse import compile
@@ -42,57 +42,11 @@ class Config(NamedTuple):
     url: str
 
 
-_semester: Optional[Semester] = None
 _config: Optional[Config] = None
 
 
 def to_date(d: str) -> date:
     return datetime.strptime(d, "%Y-%m-%d").date()
-
-
-class CustomEncoder(json.JSONEncoder):
-    def iterencode(self, o: Any, _one_shot: bool = ...) -> Iterator[str]:
-        if isinstance(o, Semester):
-            data = {}
-            for k, v in o._asdict().items():
-                if isinstance(v, Period):
-                    data[k] = v._asdict()
-                elif isinstance(v, list):
-                    data[k] = [e._asdict() for e in v]
-                else:
-                    data[k] = v
-            return json.JSONEncoder.iterencode(self, data, _one_shot)
-        return json.JSONEncoder.iterencode(self, o, _one_shot)
-
-    def default(self, obj: Any) -> Any:
-        if isinstance(obj, date):
-            return obj.isoformat()
-        return json.JSONEncoder.default(self, obj)
-
-
-class SemesterDecoder(json.JSONDecoder):
-    def decode(self, s: str, _w: Callable[..., Any] = ...) -> Any:
-        decode_json = super(SemesterDecoder, self).decode(s)
-        # TODO: Add semster valididation step to check if start < end and start and end are within period
-        return Semester(
-            type=decode_json["type"],
-            events=[
-                Event(name=event["name"], date=date.fromisoformat(event["date"]))
-                for event in decode_json["events"]
-            ],
-            period=Period(
-                start=date.fromisoformat(decode_json["period"]["start"]),
-                end=date.fromisoformat(decode_json["period"]["end"]),
-            ),
-            midterms=Period(
-                start=date.fromisoformat(decode_json["midterms"]["start"]),
-                end=date.fromisoformat(decode_json["midterms"]["end"]),
-            ),
-            finals=Period(
-                start=date.fromisoformat(decode_json["finals"]["start"]),
-                end=date.fromisoformat(decode_json["finals"]["end"]),
-            ),
-        )
 
 
 def fetch_ical_events(url: str) -> List[TrelloICalEvent]:
@@ -156,22 +110,8 @@ def get_config_path(create_if_absent: bool = False) -> Path:
     return config_path
 
 
-def get_semester_file(
-    filename="semester.json", config_path=get_config_path(), fetch_ical=False
-) -> Semester:
-    global _semester
-    if _semester is not None:
-        return _semester
-
-    file = config_path / filename
-    if not file.is_file() or fetch_ical:
-        configuration = compile_semester_data()
-    else:
-        with file.open() as f:
-            configuration = json.load(f, cls=SemesterDecoder)
-
-    _semester = configuration
-    return configuration
+def get_semester_file() -> Semester:
+    return compile_semester_data()
 
 
 def get_config_file(filename="config.json", config_path=get_config_path()) -> Config:
@@ -187,20 +127,6 @@ def get_config_file(filename="config.json", config_path=get_config_path()) -> Co
         configuration = json.load(f)
 
     return Config(url=configuration["url"])
-
-
-def write_semester_file(
-    content: Semester, filename="semester.json", config_path=None
-) -> None:
-    global _semester
-    file = config_path / filename
-    with file.open("w") as f:
-        json.dump(obj=content, fp=f, cls=CustomEncoder, indent=4)
-    _semester = None
-
-
-def write_config_file(content, filename="config.json", config_path=None) -> None:
-    global _config
 
 
 if __name__ == "__main__":

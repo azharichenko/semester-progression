@@ -1,12 +1,13 @@
 import sched
 from pathlib import Path
 
-from pidriver.data import get_semester_file
-from pidriver.draw import draw_to_display  # , draw_display_message
+from pidriver.draw import draw_to_display
 
 current_dir = Path(__file__).parent
 
 s = sched.scheduler()
+
+HOUR = 60 * 60
 
 
 def countdown_loop() -> None:
@@ -16,9 +17,8 @@ def countdown_loop() -> None:
 def main_loop() -> None:
     """Main service loop to rerun service while raspberry pi is alive"""
     # TODO: Add before semester countdown and after semester please update
-    get_semester_file(fetch_ical=True)
     draw_to_display()
-    s.enter(60 * 60 * 12, 1, main_loop)
+    s.enter(4 * HOUR, 1, main_loop)
 
 
 def final_loop() -> None:

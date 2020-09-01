@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
 from pidriver.data import get_semester_file, Period
 
-#
+
 # class InkyPHAT:
 #     WIDTH: int = 212
 #     HEIGHT: int = 104
@@ -27,7 +27,7 @@ def draw_square(
     x2: int = InkyPHAT.WIDTH,
     y2: int = InkyPHAT.HEIGHT,
     color=InkyPHAT.BLACK,
-):
+) -> None:
     for y in range(y1, y2):
         for x in range(x1, x2):
             canvas.putpixel((x, y), color)
@@ -40,7 +40,7 @@ def draw_dithered_square(
     x2: int = InkyPHAT.WIDTH,
     y2: int = InkyPHAT.HEIGHT,
     color=InkyPHAT.BLACK,
-):
+) -> None:
     alternate: bool = True
     for y in range(y1, y2):
         for x in range(x1, x2):
@@ -294,10 +294,5 @@ def draw_to_display():
 
 
 # def draw_to_display():
-#     img = draw_semester_display()
-#     img.save("test.bmp")
-
-
-# if __name__ == "__main__":
 #     img = draw_semester_display()
 #     img.save("test.bmp")
