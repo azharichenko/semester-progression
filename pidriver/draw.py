@@ -1,18 +1,25 @@
 from datetime import date
 from typing import Tuple, Generator
 
-from inky import InkyPHAT
+from pidriver.feature import feature
+
+
+if feature("DEBUG_MODE"):
+
+    class InkyPHAT:
+        WIDTH: int = 212
+        HEIGHT: int = 104
+        BLACK: int = 0
+        WHITE: int = 255
+        RED: int = 127
+
+
+else:
+    from inky import InkyPHAT
+
 from PIL import Image, ImageDraw, ImageFont
 from font_hanken_grotesk import HankenGroteskMedium
 from pidriver.data import get_semester_file, Period
-
-
-# class InkyPHAT:
-#     WIDTH: int = 212
-#     HEIGHT: int = 104
-#     BLACK: int = 0
-#     WHITE: int = 255
-#     RED: int = 127
 
 
 HALF_H = InkyPHAT.HEIGHT // 2
@@ -49,7 +56,8 @@ def draw_dithered_square(
             else:
                 canvas.putpixel((x, y), InkyPHAT.WHITE)
             alternate = not alternate
-        alternate = not alternate
+        if (x2 - x1) % 2 == 0:
+            alternate = not alternate
 
 
 def draw_vertical_line(
@@ -250,17 +258,6 @@ def draw_semester_display(y1: int = HALF_H, y2: int = InkyPHAT.HEIGHT) -> Image:
     return img
 
 
-#
-def _draw_to_display(img: Image) -> None:
-    # Set up properties of eInk display
-    inky_display = InkyPHAT("red")
-    inky_display.set_border(inky_display.BLACK)
-
-    # Display generated semester progress image
-    inky_display.set_image(img)
-    inky_display.show()
-
-
 def draw_display_message(text: str):
     # Set up properties of eInk display
     inky_display = InkyPHAT("red")
@@ -280,19 +277,23 @@ def draw_display_message(text: str):
     inky_display.show()
 
 
-def draw_to_display():
-    # Set up properties of eInk display
-    inky_display = InkyPHAT("red")
-    inky_display.set_border(inky_display.BLACK)
+if feature("DEBUG_MODE"):
 
-    # Load previously generated image
-    img = draw_semester_display()
-
-    # Display generated semester progress image
-    inky_display.set_image(img)
-    inky_display.show()
+    def draw_to_display():
+        img = draw_semester_display()
+        img.save("test.bmp")
 
 
-# def draw_to_display():
-#     img = draw_semester_display()
-#     img.save("test.bmp")
+else:
+
+    def draw_to_display():
+        # Set up properties of eInk display
+        inky_display = InkyPHAT("red")
+        inky_display.set_border(inky_display.BLACK)
+
+        # Load previously generated image
+        img = draw_semester_display()
+
+        # Display generated semester progress image
+        inky_display.set_image(img)
+        inky_display.show()

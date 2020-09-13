@@ -43,6 +43,7 @@ class Config(NamedTuple):
 
 
 _config: Optional[Config] = None
+_semester: Optional[Semester] = None
 
 
 def to_date(d: str) -> date:
@@ -62,7 +63,11 @@ def fetch_ical_events(url: str) -> List[TrelloICalEvent]:
     return converted_events
 
 
-def compile_semester_data() -> Semester:
+def get_semester_file() -> Semester:
+    global _semester
+    if _semester is not None:
+        return _semester
+
     period_start, period_end = None, None
     events = list()
     semester_type = None
@@ -83,10 +88,12 @@ def compile_semester_data() -> Semester:
                 pass
             elif event.name.startswith("F"):
                 finals_start = event.dt
-        else:
+        elif date.today() - event.dt <= timedelta(days=0):
             events.append(Event(name=event.name, date=event.dt))
+
     events = sorted(events, key=lambda x: x.date)
-    return Semester(
+
+    _semester = Semester(
         type=semester_type,
         period=Period(start=period_start, end=period_end),
         events=events,
@@ -95,6 +102,7 @@ def compile_semester_data() -> Semester:
         ),
         finals=Period(start=finals_start, end=finals_start + ONE_WEEK - ONE_DAY),
     )
+    return _semester
 
 
 def get_config_path(create_if_absent: bool = False) -> Path:
@@ -108,10 +116,6 @@ def get_config_path(create_if_absent: bool = False) -> Path:
             # TODO: Correct error with more helpful message
             raise RuntimeError("Missing ~/.sp_config. Please run creation script.")
     return config_path
-
-
-def get_semester_file() -> Semester:
-    return compile_semester_data()
 
 
 def get_config_file(filename="config.json", config_path=get_config_path()) -> Config:
@@ -130,7 +134,4 @@ def get_config_file(filename="config.json", config_path=get_config_path()) -> Co
 
 
 if __name__ == "__main__":
-    from pprint import pprint
-
-    pprint(compile_semester_data())
-    # pprint(get_semester_file())
+    print(get_semester_file())
